@@ -80,7 +80,7 @@ public class NativeHelpersModule extends ReactContextBaseJavaModule {
   }
 
   private String getDeviceIp() {
-    WifiManager wifiManager = (WifiManager) getReactApplicationContext().getSystemService(WIFI_SERVICE);
+    WifiManager wifiManager = (WifiManager) getReactApplicationContext().getApplicationContext().getSystemService(WIFI_SERVICE);
     return Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
   }
 
