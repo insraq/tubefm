@@ -23,7 +23,7 @@ import {
 
 import getInfo from './app/ytdl/info';
 import CachedStore from './app/support/cached-store';
-import {without} from 'lodash';
+import { without } from 'lodash';
 
 import RNFS from 'react-native-fs';
 
@@ -49,7 +49,7 @@ export default class tubefm extends Component {
 
   componentDidMount() {
     Promise.all([RNFS.readdir(RNFS.ExternalDirectoryPath), CachedStore.get('videos')]).then((values) => {
-      if (values[0]) this.setState({files: values[0]});
+      if (values[0]) this.setState({ files: values[0] });
     });
   }
 
@@ -76,42 +76,43 @@ export default class tubefm extends Component {
         <TouchableNativeFeedback onPress={() => {
           if (this.state.ip) {
             NativeHelpers.stopServer();
-            this.setState({ip: null});
+            this.setState({ ip: null });
           } else {
-            NativeHelpers.startServer().then((e) =>this.setState({ip: e.ip}));
+            NativeHelpers.startServer().then((e) => this.setState({ ip: e.ip }));
           }
         }}>
-          <View style={{paddingHorizontal: 10, flexDirection: 'row', height: 44, alignItems: 'center'}}>
-            <Text style={{flexGrow: 1, fontWeight: 'bold', color: '#333', fontSize: 18}}>
+          <View style={{ paddingHorizontal: 10, flexDirection: 'row', height: 44, alignItems: 'center' }}>
+            <Text style={{ flexGrow: 1, fontWeight: 'bold', color: '#333', fontSize: 18 }}>
               {this.state.ip ? `http://${this.state.ip}:8765` : 'TubeFM'}
             </Text>
-            <Text style={{fontWeight: 'bold'}}>
+            <Text style={{ fontWeight: 'bold' }}>
               {this.state.ip ? 'TURN OFF' : 'TURN ON WEB UI'}
             </Text>
           </View>
         </TouchableNativeFeedback>
-        <View style={{backgroundColor: '#ccc', height: StyleSheet.hairlineWidth}} />
-        <View style={{backgroundColor: '#eee', height: StyleSheet.hairlineWidth * 2}} />
-        <View style={{alignItems: 'center', flexDirection: 'row', backgroundColor: '#f1f1f1', paddingHorizontal: 10, borderBottomColor: '#ddd', borderBottomWidth: StyleSheet.hairlineWidth}}>
-          <Text style={{fontWeight: 'bold', color: '#3a3a3a'}}>youtube.com/watch?v=</Text>
+        <View style={{ backgroundColor: '#ccc', height: StyleSheet.hairlineWidth }} />
+        <View style={{ backgroundColor: '#eee', height: StyleSheet.hairlineWidth * 2 }} />
+        <View style={{ alignItems: 'center', flexDirection: 'row', backgroundColor: '#f1f1f1', paddingHorizontal: 10, borderBottomColor: '#ddd', borderBottomWidth: StyleSheet.hairlineWidth }}>
+          <Text style={{ fontWeight: 'bold', color: '#3a3a3a' }}>youtube.com/watch?v=</Text>
           <TextInput
             returnKeyType="done"
             underlineColorAndroid="transparent"
-            style={{flexGrow: 1, marginBottom: -10, color: '#999'}}
+            style={{ flexGrow: 1, color: '#999' }}
             placeholder="YouTube ID"
+            defaultValue="aIFdJsLRkRM"
             onSubmitEditing={(e) => this.addVideoId(e.nativeEvent.text)} />
         </View>
         {this.state.pending.map((f, i) => (
           <View key={i} style={styles.block}>
-            <Image resizeMode="cover" source={{uri: DEFAULT_IMAGE}} style={{height: 138 / 3, width: 246 / 3}} />
-            <Text numberOfLines={1} style={{fontWeight: 'bold', paddingHorizontal: 10, flex: 1}}>{f}</Text>
-            <Text style={{paddingRight: 10}}>Queueing...</Text>
+            <Image resizeMode="cover" source={{ uri: DEFAULT_IMAGE }} style={{ height: 138 / 3, width: 246 / 3 }} />
+            <Text numberOfLines={1} style={{ fontWeight: 'bold', paddingHorizontal: 10, flex: 1 }}>{f}</Text>
+            <Text style={{ paddingRight: 10 }}>Queueing...</Text>
           </View>
         ))}
-        <ScrollView style={{flexGrow: 1}}>
-          {this.state.files.map((f) => <PlayableItem fileName={f} key={f} onRemove={(r) => this.setState({files: without(this.state.files, r)})} />)}
+        <ScrollView style={{ flexGrow: 1 }}>
+          {this.state.files.map((f) => <PlayableItem fileName={f} key={f} onRemove={(r) => this.setState({ files: without(this.state.files, r) })} />)}
         </ScrollView>
-        <View style={{backgroundColor: '#ddd', height: StyleSheet.hairlineWidth}} />
+        <View style={{ backgroundColor: '#ddd', height: StyleSheet.hairlineWidth }} />
       </View>
     );
   }
@@ -120,7 +121,7 @@ export default class tubefm extends Component {
 class PlayableItem extends Component {
   constructor(props) {
     super(props);
-    this.state = {fileName: props.fileName, file: {}, downloading: null};
+    this.state = { fileName: props.fileName, file: {}, downloading: null };
   }
   componentDidMount() {
     this.fetchData();
@@ -128,7 +129,7 @@ class PlayableItem extends Component {
   fetchData() {
     CachedStore.get('videos').then((data) => {
       if (data && data[this.props.fileName]) {
-        this.setState({file: data[this.props.fileName]});
+        this.setState({ file: data[this.props.fileName] });
       }
       this.download();
     });
@@ -136,26 +137,26 @@ class PlayableItem extends Component {
   download() {
     RNFS.exists(`${RNFS.ExternalDirectoryPath}/${this.props.fileName}`).then((exists) => {
       if (exists) return;
-      this.setState({downloading: 'Downloading...'});
+      this.setState({ downloading: 'Downloading...' });
       getInfo(`https://www.youtube.com/watch?v=${this.state.fileName}`, (error, info) => {
         if (error) {
           alert(error);
           return this.props.onRemove(this.state.fileName);
         }
-        var format = info.formats.filter((f) => f.type.match(/audio\/mp4/))[0];
+        var format = info.formats.filter((f) => f.type && f.type.match(/audio\/mp4/))[0];
         var filePath = `${RNFS.ExternalDirectoryPath}/${info.video_id}`;
-        var fileInfo = {title: info.title, id: info.video_id, thumbnail: info.thumbnail_url};
+        var fileInfo = { title: info.title, id: info.video_id, thumbnail: info.thumbnail_url };
         var obj = {};
         obj[fileInfo.id] = fileInfo;
-        this.setState({file: fileInfo});
+        this.setState({ file: fileInfo });
         var result = RNFS.downloadFile({
           fromUrl: format.url,
           toFile: filePath,
-          progress: (p) => this.setState({downloading: Math.round(p.bytesWritten * 100 / p.contentLength) + '%'}),
+          progress: (p) => this.setState({ downloading: Math.round(p.bytesWritten * 100 / p.contentLength) + '%' }),
           progressDivider: 5,
         });
         result.promise.then(() => {
-          this.setState({downloading: null});
+          this.setState({ downloading: null });
           CachedStore.get('videos').then((data) => CachedStore.set('videos', Object.assign(data || {}, obj)));
         });
       });
@@ -165,19 +166,21 @@ class PlayableItem extends Component {
     var f = this.state.file;
     var Container = this.state.downloading ? View : TouchableNativeFeedback;
     return (
-      <Container 
+      <Container
         onPress={() => NativeHelpers.playAudio(`${RNFS.ExternalDirectoryPath}/${this.state.fileName}`)}
         onLongPress={() => Alert.alert('Delete this file?', `You cannot undo this.`, [
-          {text: 'Cancel', onPress: () => {}},
-          {text: 'Delete', onPress: () => {
-            RNFS.unlink(`${RNFS.ExternalDirectoryPath}/${this.state.fileName}`);
-            this.props.onRemove(this.state.fileName);
-          }},
+          { text: 'Cancel', onPress: () => { } },
+          {
+            text: 'Delete', onPress: () => {
+              RNFS.unlink(`${RNFS.ExternalDirectoryPath}/${this.state.fileName}`);
+              this.props.onRemove(this.state.fileName);
+            }
+          },
         ])}>
         <View style={styles.block}>
-          <Image resizeMode="cover" source={{uri: !f.thumbnail ? DEFAULT_IMAGE : f.thumbnail.replace('default.jpg', 'hqdefault.jpg')}} style={{height: 138 / 3, width: 246 / 3}} />
-          <Text numberOfLines={1} style={{fontWeight: 'bold', paddingHorizontal: 10, flex: 1}}>{f.title || f.id}</Text>
-          {!this.state.downloading ? null : <Text style={{paddingRight: 10}}>{this.state.downloading}</Text>}
+          <Image resizeMode="cover" source={{ uri: !f.thumbnail ? DEFAULT_IMAGE : f.thumbnail.replace('default.jpg', 'hqdefault.jpg') }} style={{ height: 138 / 3, width: 246 / 3 }} />
+          <Text numberOfLines={1} style={{ fontWeight: 'bold', paddingHorizontal: 10, flex: 1 }}>{f.title || f.id}</Text>
+          {!this.state.downloading ? null : <Text style={{ paddingRight: 10 }}>{this.state.downloading}</Text>}
         </View>
       </Container>
     );
@@ -187,13 +190,13 @@ class PlayableItem extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#fefefe',
   },
   block: {
-    height: 138 / 3, 
-    alignItems: 'center', 
-    flexDirection: 'row', 
-    borderBottomColor: '#ddd', 
+    height: 138 / 3,
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderBottomColor: '#ddd',
     borderBottomWidth: StyleSheet.hairlineWidth
   }
 });
