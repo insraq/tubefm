@@ -92,14 +92,12 @@ export default class tubefm extends Component {
         </TouchableNativeFeedback>
         <View style={{ backgroundColor: '#ccc', height: StyleSheet.hairlineWidth }} />
         <View style={{ backgroundColor: '#eee', height: StyleSheet.hairlineWidth * 2 }} />
-        <View style={{ alignItems: 'center', flexDirection: 'row', backgroundColor: '#f1f1f1', paddingHorizontal: 10, borderBottomColor: '#ddd', borderBottomWidth: StyleSheet.hairlineWidth }}>
-          <Text style={{ fontWeight: 'bold', color: '#3a3a3a' }}>youtube.com/watch?v=</Text>
+        <View style={{ backgroundColor: '#f1f1f1', paddingHorizontal: 10, borderBottomColor: '#ddd', borderBottomWidth: StyleSheet.hairlineWidth }}>
           <TextInput
             returnKeyType="done"
             underlineColorAndroid="transparent"
-            style={{ flexGrow: 1, color: '#999' }}
-            placeholder="YouTube ID"
-            defaultValue="aIFdJsLRkRM"
+            style={{ flexGrow: 1, fontSize: 24, color: '#666' }}
+            placeholder="youtube.com/watch?v="
             onSubmitEditing={(e) => this.addVideoId(e.nativeEvent.text)} />
         </View>
         {this.state.pending.map((f, i) => (
