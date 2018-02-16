@@ -1,9 +1,9 @@
 'use strict';
 
-const qs       = require('querystring');
-const url      = require('url');
+const qs = require('querystring');
+const url = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
-const FORMATS  = require('./formats');
+const FORMATS = require('./formats');
 
 
 const VIDEO_URL = 'https://www.youtube.com/watch?v=';
@@ -18,10 +18,10 @@ const VIDEO_URL = 'https://www.youtube.com/watch?v=';
 var timeRegexp = /(?:(\d+)h)?(?:(\d+)m(?!s))?(?:(\d+)s)?(?:(\d+)(?:ms)?)?/;
 exports.parseTime = (time) => {
   var result = timeRegexp.exec(time.toString());
-  var hours  = result[1] || 0;
-  var mins   = result[2] || 0;
-  var secs   = result[3] || 0;
-  var ms     = result[4] || 0;
+  var hours = result[1] || 0;
+  var mins = result[2] || 0;
+  var secs = result[3] || 0;
+  var ms = result[4] || 0;
 
   return hours * 3600000 + mins * 60000 + secs * 1000 + parseInt(ms, 10);
 };
@@ -119,6 +119,11 @@ exports.chooseFormat = (formats, options) => {
 
   var format;
   var quality = options.quality || 'highest';
+  function getBitrate(f) {
+    let s = f.bitrate.split('-');
+    return parseFloat(s[s.length - 1], 10);
+  }
+
   switch (quality) {
     case 'highest':
       format = formats[0];
@@ -135,22 +140,18 @@ exports.chooseFormat = (formats, options) => {
         if (!format
           || f.audioBitrate > format.audioBitrate
           || (f.audioBitrate === format.audioBitrate && format.encoding && !f.encoding))
-            format = f;
+          format = f;
       }
       break;
 
     case 'highestvideo':
-      function getBitrate(f) {
-        let s = f.bitrate.split('-');
-        return parseFloat(s[s.length - 1], 10);
-      }
       formats = exports.filterFormats(formats, 'video');
       format = null;
       for (let f of formats) {
         if (!format
           || getBitrate(f) > getBitrate(format)
           || (getBitrate(f) === getBitrate(format) && format.audioEncoding && !f.audioEncoding))
-            format = f;
+          format = f;
       }
       break;
 
@@ -246,11 +247,11 @@ exports.between = (haystack, left, right) => {
  * @param {String} link
  * @return {String|Error}
  */
-exports.getURLVideoID = function(link) {
+exports.getURLVideoID = function (link) {
   var parsed = url.parse(link, true);
   var id = parsed.query.v;
   if (parsed.hostname === 'youtu.be' ||
-     (parsed.hostname === 'youtube.com' ||
+    (parsed.hostname === 'youtube.com' ||
       parsed.hostname === 'www.youtube.com') && !id) {
     var s = parsed.pathname.split('/');
     id = s[s.length - 1];
