@@ -48,7 +48,7 @@ export default class tubefm extends Component {
   }
 
   componentDidMount() {
-    Promise.all([RNFS.readdir(RNFS.ExternalDirectoryPath), CachedStore.get('videos')]).then((values) => {
+    Promise.all([RNFS.readdir(NativeHelpers.MUSIC_DIR), CachedStore.get('videos')]).then((values) => {
       if (values[0]) this.setState({ files: values[0] });
     });
   }
@@ -133,7 +133,7 @@ class PlayableItem extends Component {
     });
   }
   download() {
-    RNFS.exists(`${RNFS.ExternalDirectoryPath}/${this.props.fileName}`).then((exists) => {
+    RNFS.exists(`${NativeHelpers.MUSIC_DIR}/${this.props.fileName}.m4a`).then((exists) => {
       if (exists) return;
       this.setState({ downloading: 'Downloading...' });
       getInfo(`https://www.youtube.com/watch?v=${this.state.fileName}`, (error, info) => {
@@ -142,7 +142,7 @@ class PlayableItem extends Component {
           return this.props.onRemove(this.state.fileName);
         }
         var format = info.formats.filter((f) => f.type && f.type.match(/audio\/mp4/))[0];
-        var filePath = `${RNFS.ExternalDirectoryPath}/${info.video_id}`;
+        var filePath = `${NativeHelpers.MUSIC_DIR}/${info.video_id}.m4a`;
         var fileInfo = { title: info.title, id: info.video_id, thumbnail: info.thumbnail_url };
         var obj = {};
         obj[fileInfo.id] = fileInfo;
@@ -165,12 +165,12 @@ class PlayableItem extends Component {
     var Container = this.state.downloading ? View : TouchableNativeFeedback;
     return (
       <Container
-        onPress={() => NativeHelpers.playAudio(`${RNFS.ExternalDirectoryPath}/${this.state.fileName}`)}
+        onPress={() => NativeHelpers.playAudio(`${NativeHelpers.MUSIC_DIR}/${this.state.fileName}.m4a`)}
         onLongPress={() => Alert.alert('Delete this file?', `You cannot undo this.`, [
           { text: 'Cancel', onPress: () => { } },
           {
             text: 'Delete', onPress: () => {
-              RNFS.unlink(`${RNFS.ExternalDirectoryPath}/${this.state.fileName}`);
+              RNFS.unlink(`${NativeHelpers.MUSIC_DIR}/${this.state.fileName}.m4a`);
               this.props.onRemove(this.state.fileName);
             }
           },

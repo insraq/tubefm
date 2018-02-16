@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
 import android.text.format.Formatter;
 
 import com.facebook.react.bridge.Arguments;
@@ -17,6 +18,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -77,6 +80,13 @@ public class NativeHelpersModule extends ReactContextBaseJavaModule {
   private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
     return getReactApplicationContext()
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("MUSIC_DIR", getCurrentActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath());
+    return constants;
   }
 
   private String getDeviceIp() {
