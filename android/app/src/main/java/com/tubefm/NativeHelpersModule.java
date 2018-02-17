@@ -1,6 +1,7 @@
 package com.tubefm;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
 
+import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 
 public class NativeHelpersModule extends ReactContextBaseJavaModule {
@@ -57,6 +59,14 @@ public class NativeHelpersModule extends ReactContextBaseJavaModule {
       promise.reject(new JSApplicationIllegalArgumentException(
         "Could not open URL '" + url + "': " + e.getMessage()));
     }
+  }
+
+  @ReactMethod
+  public void download(String url, String fileName) {
+      DownloadManager dm = (DownloadManager) getCurrentActivity().getSystemService(DOWNLOAD_SERVICE);
+      Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).mkdirs();
+      DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url)).setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, fileName);
+      dm.enqueue(request);
   }
 
   @ReactMethod
