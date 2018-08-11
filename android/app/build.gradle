@@ -83,11 +83,11 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.tubefm"
@@ -144,7 +144,12 @@ dependencies {
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile "org.nanohttpd:nanohttpd:2.2.0"
-    compile "com.google.api-client:google-api-client:1.23.0"
+    compile("com.google.api-client:google-api-client:1.24.1") {
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: 'xpp3'
+        exclude group: 'junit'
+        exclude group: 'com.google.android'
+    }
 }
 
 // Run this once to be able to run the application with BUCK
