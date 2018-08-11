@@ -144,6 +144,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile "org.nanohttpd:nanohttpd:2.2.0"
+    compile "com.google.api-client:google-api-client:1.23.0"
 }
 
 // Run this once to be able to run the application with BUCK

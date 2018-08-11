@@ -109,8 +109,8 @@ export default class tubefm extends Component {
     return (
       <TouchableNativeFeedback onPress={() => {
         const fileName = `${info.title}.${item.container}`;
-        NativeHelpers.download(item.url, fileName);
         ToastAndroid.show(`Downloading...`, ToastAndroid.SHORT);
+        NativeHelpers.download(item.url, fileName);
       }}>
         <View style={{
           height: 50,
